@@ -5,11 +5,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/kristaponis/go-photo-gallery/views"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	w.Write([]byte("<h1>Hello</h1>"))
+	homeView := views.NewView("views/home.gohtml")
+	if err := homeView.Template.Execute(w, nil); err != nil {
+		panic(err)
+	}
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
