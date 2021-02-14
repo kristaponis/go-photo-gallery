@@ -29,6 +29,6 @@ View cycle example:
         <h1>Stuff</h1>
     {{ end }}
     ```
-    In the views.```NewView(layout, template)``` function the layout and the template can be any template file, for eg. with ```"bootstrap.gohtml"``` template ```"home.gohtml"``` will return Home Page, ```"contacts.gohtml"``` will return Contacts Page.
-* ```homeView.Template.ExecuteTemplate```(w, homeView.Layout, nil) executes that result by writing response w to the client
+    In the ```views.NewView(layout, template)``` function the layout and the template can be any template file, for eg. with ```"bootstrap.gohtml"``` template ```"home.gohtml"``` will return Home Page, ```"contacts.gohtml"``` will return Contacts Page.
+* ```homeView.Template.ExecuteTemplate(w, homeView.Layout, nil)``` executes that result by writing response w to the client
 
