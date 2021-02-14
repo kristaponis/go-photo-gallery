@@ -10,8 +10,8 @@ import (
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	homeView := views.NewView("views/home.gohtml")
-	if err := homeView.Template.Execute(w, nil); err != nil {
+	homeView := views.NewView("bootstrap", "views/home.gohtml")
+	if err := homeView.Template.ExecuteTemplate(w, homeView.Layout, nil); err != nil {
 		panic(err)
 	}
 }
@@ -25,7 +25,6 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	r := mux.NewRouter()
-
 	r.HandleFunc("/", homeHandler)
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
