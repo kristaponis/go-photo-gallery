@@ -16,6 +16,14 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func contactHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	contactView := views.NewView("bootstrap", "views/contact.gohtml")
+	if err := contactView.Render(w, nil); err != nil {
+		panic(err)
+	}
+}
+
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusNotFound)
@@ -26,6 +34,7 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", homeHandler)
+	r.HandleFunc("/contact", contactHandler)
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
 	fmt.Println("Running server on http://127.0.0.1:8080")
