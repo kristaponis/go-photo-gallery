@@ -11,7 +11,7 @@ import (
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	homeView := views.NewView("bootstrap", "views/home.gohtml")
-	if err := homeView.Template.ExecuteTemplate(w, homeView.Layout, nil); err != nil {
+	if err := homeView.Render(w, nil); err != nil {
 		panic(err)
 	}
 }
