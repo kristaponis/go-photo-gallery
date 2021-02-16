@@ -7,7 +7,7 @@ gorilla/mux
 
 ### View
 
-View cycle example:  
+Simple View cycle example:  
 * A request hits App at ```"/"```.
 * Router redirects the request to the ```homeHandler()``` handler.
 * ```homeHandler()``` creates ```var homeView``` of type ```*views.View``` by initializing it with ```views.NewView()``` function and passing ```"bootstrap"``` and ```"views/home.gohtml"``` as arguments.
@@ -32,3 +32,11 @@ View cycle example:
     In the ```views.NewView(layoutName, template)``` function the layoutName and the template can be any template file, for eg. with ```"bootstrap.gohtml"``` template ```"home.gohtml"``` will return Home Page, with ```"bootstrap.gohtml"``` template ```"contacts.gohtml"``` will return Contacts Page.
 * ```homeView.Render(w, nil)``` calls ```Template.ExecuteTemplate(w, homeView.Layout, interface{})```, which executes template, then ```homeView.Render()``` writes response w to the client.
 
+### Controller
+
+Simple Controller example with View:
+* A request hits App at ```"/signup"```.
+* Router redirects the request to the ```controllers.NewUsers().New``` handler.
+* ```NewUsers()``` creates new page from  given templates with signup form by initializing it with ```views.NewView()``` function and passing ```"bootstrap"``` and ```"views/users/new.gohtml"``` as arguments.
+* ```views.NewView()``` takes layout template name ```"bootstrap"```, adds to it (yields) ```"views/users/new.gohtml"``` template and other layout template files, then parses all the passed and added files, checks for errors and puts returned result to ```Users``` struct field ```NewView```, which is of type ```views.View```.
+* Next ```New``` executes this template with ```NewView.Render()``` method. 

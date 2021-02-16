@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/kristaponis/go-photo-gallery/controllers"
 	"github.com/kristaponis/go-photo-gallery/views"
 )
 
@@ -24,14 +25,6 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func signupHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	signupView := views.NewView("bootstrap", "views/signup.gohtml")
-	if err := signupView.Render(w, nil); err != nil {
-		panic(err)
-	}
-}
-
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusNotFound)
@@ -41,9 +34,12 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/", homeHandler)
-	r.HandleFunc("/contact", contactHandler)
-	r.HandleFunc("/signup", signupHandler)
+
+	r.HandleFunc("/", homeHandler).Methods(http.MethodGet)
+	r.HandleFunc("/contact", contactHandler).Methods(http.MethodGet)
+	r.HandleFunc("/signup", controllers.NewUsers().New).Methods(http.MethodGet)
+	r.HandleFunc("/signup", controllers.NewUsers().Create).Methods(http.MethodPost)
+
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
 	fmt.Println("Running server on http://127.0.0.1:8080")
