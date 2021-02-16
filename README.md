@@ -2,29 +2,21 @@
 
 Photo Gallery app with Golang
 
+#### Tech stack:  
 gorilla/mux  
-MongoDB  
+MongoDB
 
-MVC  
-
-| Router
----
-
-↓
-| UserController
----
-
-↓
-| UserModel
----
-
-↓
-| UserController
----
-
-↓
-| UserView
----
+| MVC pattern |
+| :-- |
+| Router |
+| ↓ |
+| UserController |
+| ↓ |
+| UserModel |
+| ↓ |
+| UserController |
+| ↓ |
+| UserView |
 
 ### View
 
