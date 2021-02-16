@@ -2,8 +2,29 @@
 
 Photo Gallery app with Golang
 
-MVC
-gorilla/mux
+gorilla/mux  
+MongoDB  
+
+MVC  
+
+| Router
+---
+
+↓
+| UserController
+---
+
+↓
+| UserModel
+---
+
+↓
+| UserController
+---
+
+↓
+| UserView
+---
 
 ### View
 
