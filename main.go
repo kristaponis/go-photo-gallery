@@ -6,24 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/kristaponis/go-photo-gallery/controllers"
-	"github.com/kristaponis/go-photo-gallery/views"
 )
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	homeView := views.NewView("bootstrap", "views/home.gohtml")
-	if err := homeView.Render(w, nil); err != nil {
-		panic(err)
-	}
-}
-
-func contactHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	contactView := views.NewView("bootstrap", "views/contact.gohtml")
-	if err := contactView.Render(w, nil); err != nil {
-		panic(err)
-	}
-}
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
@@ -35,8 +18,8 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", homeHandler).Methods(http.MethodGet)
-	r.HandleFunc("/contact", contactHandler).Methods(http.MethodGet)
+	r.HandleFunc("/", controllers.NewStaticPage().Home).Methods(http.MethodGet)
+	r.HandleFunc("/contact", controllers.NewStaticPage().Contact).Methods(http.MethodGet)
 	r.HandleFunc("/signup", controllers.NewUsers().New).Methods(http.MethodGet)
 	r.HandleFunc("/signup", controllers.NewUsers().Create).Methods(http.MethodPost)
 
