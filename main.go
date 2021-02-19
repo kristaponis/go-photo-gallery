@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/kristaponis/go-photo-gallery/config"
 	"github.com/kristaponis/go-photo-gallery/controllers"
 )
 
@@ -26,5 +27,5 @@ func main() {
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
 	fmt.Println("Running server on http://127.0.0.1:8080")
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(config.PORT, r)
 }
