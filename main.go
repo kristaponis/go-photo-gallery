@@ -17,10 +17,12 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	ctrls := controllers.NewStaticPage()
+
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", controllers.NewStaticPage().Home).Methods(http.MethodGet)
-	r.HandleFunc("/contact", controllers.NewStaticPage().Contact).Methods(http.MethodGet)
+	r.HandleFunc("/", ctrls.Home).Methods(http.MethodGet)
+	r.HandleFunc("/contact", ctrls.Contact).Methods(http.MethodGet)
 	r.HandleFunc("/signup", controllers.NewUsers().New).Methods(http.MethodGet)
 	r.HandleFunc("/signup", controllers.NewUsers().Create).Methods(http.MethodPost)
 
