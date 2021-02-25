@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/kristaponis/go-photo-gallery/models"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -17,14 +18,20 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	dns := fmt.Sprintf("host=%s port=%d dbname=%s sslmode=disable",
+		config.DBHOST, config.DBPORT, config.DBNAME)
+	us, err := models.UserServiceConn(dns)
+	if err != nil {
+		panic(err)
+	}
 	ctrls := controllers.NewStaticPage()
 
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", ctrls.Home).Methods(http.MethodGet)
 	r.HandleFunc("/contact", ctrls.Contact).Methods(http.MethodGet)
-	r.HandleFunc("/signup", controllers.NewUsers().New).Methods(http.MethodGet)
-	r.HandleFunc("/signup", controllers.NewUsers().Create).Methods(http.MethodPost)
+	r.HandleFunc("/signup", controllers.NewUsers(us).New).Methods(http.MethodGet)
+	r.HandleFunc("/signup", controllers.NewUsers(us).Create).Methods(http.MethodPost)
 
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 

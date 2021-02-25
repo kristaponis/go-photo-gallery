@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/kristaponis/go-photo-gallery/models"
 	"net/http"
 
 	"github.com/gorilla/schema"
@@ -9,13 +10,15 @@ import (
 
 // SignupForm type represents new user signup form at /signup.
 type SignupForm struct {
+	Name     string `schema:"name"`
 	Email    string `schema:"email"`
 	Password string `schema:"password"`
 }
 
 // Users type contains info about user.
 type Users struct {
-	NewView *views.View
+	NewView     *views.View
+	userService *models.UserService
 }
 
 // New renders the form used to create a new user account.
@@ -36,12 +39,21 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	if err := parseDecodeForm(r, &sf); err != nil {
 		panic(err)
 	}
+	user := models.User{
+		Name:  sf.Name,
+		Email: sf.Email,
+	}
+	if err := u.userService.Create(&user); err != nil {
+		http.Error(w, "Something wrong", http.StatusInternalServerError)
+		panic(err)
+	}
 }
 
 // NewUsers generates new page from template with the form for signing up.
-func NewUsers() *Users {
+func NewUsers(us *models.UserService) *Users {
 	return &Users{
-		NewView: views.NewView("bootstrap", "views/users/new.gohtml"),
+		NewView:     views.NewView("bootstrap", "views/users/new.gohtml"),
+		userService: us,
 	}
 }
 
