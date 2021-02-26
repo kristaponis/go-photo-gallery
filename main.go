@@ -24,6 +24,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer us.Close()
+	
 	ctrls := controllers.NewStaticPage()
 
 	r := mux.NewRouter()

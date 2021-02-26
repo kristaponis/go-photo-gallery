@@ -1,8 +1,10 @@
 package controllers
 
 import (
-	"github.com/kristaponis/go-photo-gallery/models"
+	"fmt"
 	"net/http"
+
+	"github.com/kristaponis/go-photo-gallery/models"
 
 	"github.com/gorilla/schema"
 	"github.com/kristaponis/go-photo-gallery/views"
@@ -42,11 +44,13 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	user := models.User{
 		Name:  sf.Name,
 		Email: sf.Email,
+		Pass:  sf.Password,
 	}
 	if err := u.userService.Create(&user); err != nil {
 		http.Error(w, "Something wrong", http.StatusInternalServerError)
 		panic(err)
 	}
+	fmt.Println(sf)
 }
 
 // NewUsers generates new page from template with the form for signing up.

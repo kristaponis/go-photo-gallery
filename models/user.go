@@ -2,12 +2,17 @@ package models
 
 import (
 	"errors"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var (
+	// ErrNotFound is used when no record is found.
 	ErrNotFound  = errors.New("models: resource not found")
+
+	// ErrInvalidID id used when passed ID is invalid.
 	ErrInvalidID = errors.New("models: ID is invalid, must be > 0")
 )
 
@@ -26,7 +31,7 @@ type UserService struct {
 	db *gorm.DB
 }
 
-// ById will look for a user with the provided ID. If the user
+// ByID will look for a user with the provided ID. If the user
 // is found, then it will return the user and nil for the error.
 // If the user is not found, it will return ErrNotFound error
 // and nil for the user. If there is another error, it will return
@@ -67,7 +72,14 @@ func (us *UserService) ByEmail(e string) (*User, error) {
 // Create will create the provided user, auto fill data and
 // insert this info into database.
 func (us *UserService) Create(u *User) error {
-	return us.db.Create(u).Error
+	hashpass, err := bcrypt.GenerateFromPassword([]byte(u.Pass), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	u.PassHash = string(hashpass)
+	u.Pass = ""
+	// us.db.AutoMigrate(&u)
+	return us.db.Create(&u).Error
 }
 
 // Update will update yhe provided user. It will rewrite the user
