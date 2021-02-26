@@ -7,15 +7,17 @@ import (
 )
 
 var (
-	ErrNotFound = errors.New("models: resource not found")
+	ErrNotFound  = errors.New("models: resource not found")
 	ErrInvalidID = errors.New("models: ID is invalid, must be > 0")
 )
 
 // User holds template for user info to be inserted into database.
 type User struct {
 	gorm.Model
-	Name  string
-	Email string `gorm:"not null;unique_index"`
+	Name     string
+	Email    string `gorm:"not null;unique_index"`
+	Pass     string `gorm:"-"`
+	PassHash string `gorm:"not null"`
 }
 
 // UserService hods gorm.DB object and performs database operations

@@ -5,4 +5,4 @@
 stuff/
 notes.md
 
-config/
+config/config.go
