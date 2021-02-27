@@ -14,6 +14,9 @@ var (
 
 	// ErrInvalidID id used when passed ID is invalid.
 	ErrInvalidID = errors.New("models: ID is invalid, must be > 0")
+
+	// passPepper ads additional fixed string to user password (pepper).
+	passPepper = "chili-pepper"
 )
 
 // User holds template for user info to be inserted into database.
@@ -72,7 +75,7 @@ func (us *UserService) ByEmail(e string) (*User, error) {
 // Create will create the provided user, auto fill data and
 // insert this info into database.
 func (us *UserService) Create(u *User) error {
-	hashpass, err := bcrypt.GenerateFromPassword([]byte(u.Pass), bcrypt.DefaultCost)
+	hashpass, err := bcrypt.GenerateFromPassword([]byte(u.Pass + passPepper), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
