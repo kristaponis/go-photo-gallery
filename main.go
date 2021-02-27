@@ -32,8 +32,12 @@ func main() {
 
 	r.HandleFunc("/", ctrls.Home).Methods(http.MethodGet)
 	r.HandleFunc("/contact", ctrls.Contact).Methods(http.MethodGet)
-	r.HandleFunc("/signup", controllers.NewUsers(us).New).Methods(http.MethodGet)
+
+	r.HandleFunc("/signup", controllers.NewUsers(us).NewUser).Methods(http.MethodGet)
 	r.HandleFunc("/signup", controllers.NewUsers(us).Create).Methods(http.MethodPost)
+
+	r.HandleFunc("/login", controllers.NewUsers(us).NewLogin).Methods(http.MethodGet)
+	r.HandleFunc("/login", controllers.NewUsers(us).Login).Methods(http.MethodPost)
 
 	r.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 

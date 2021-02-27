@@ -10,9 +10,15 @@ import (
 	"github.com/kristaponis/go-photo-gallery/views"
 )
 
-// SignupForm type represents new user signup form at /signup.
+// SignupForm represents new user signup form at /signup.
 type SignupForm struct {
 	Name     string `schema:"name"`
+	Email    string `schema:"email"`
+	Password string `schema:"password"`
+}
+
+// LoginForm represents existing user login form at /login.
+type LoginForm struct {
 	Email    string `schema:"email"`
 	Password string `schema:"password"`
 }
@@ -20,14 +26,24 @@ type SignupForm struct {
 // Users type contains info about user.
 type Users struct {
 	NewView     *views.View
+	LoginView   *views.View
 	userService *models.UserService
 }
 
-// New renders the form used to create a new user account.
+// NewUser renders the form used to create a new user account.
 //
 // GET /signup
-func (u *Users) New(w http.ResponseWriter, r *http.Request) {
+func (u *Users) NewUser(w http.ResponseWriter, r *http.Request) {
 	if err := u.NewView.Render(w, nil); err != nil {
+		panic(err)
+	}
+}
+
+// NewLogin renders the form used to log in for a existing user.
+//
+// GET /signup
+func (u *Users) NewLogin(w http.ResponseWriter, r *http.Request) {
+	if err := u.LoginView.Render(w, nil); err != nil {
 		panic(err)
 	}
 }
@@ -42,21 +58,43 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	user := models.User{
-		Name:  sf.Name,
-		Email: sf.Email,
-		Pass:  sf.Password,
+		Name:     sf.Name,
+		Email:    sf.Email,
+		Password: sf.Password,
 	}
 	if err := u.userService.Create(&user); err != nil {
 		http.Error(w, "Something wrong", http.StatusInternalServerError)
 		panic(err)
 	}
-	fmt.Println(sf)
+}
+
+// Login is used to verify email address and password of the user,
+// and log the user in if they are correct.
+//
+// POST /login
+func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
+	var lf LoginForm
+	if err := parseDecodeForm(r, &lf); err != nil {
+		panic(err)
+	}
+	user, err := u.userService.Authenticate(lf.Email, lf.Password)
+	switch err {
+	case models.ErrNotFound:
+		fmt.Fprintln(w, "Invalid email address")
+	case models.ErrInvalidPassword:
+		fmt.Fprintln(w, "Invalid password")
+	case nil:
+		fmt.Fprintln(w, user)
+	default:
+		http.Error(w, "Intermal server error - 500", http.StatusInternalServerError)
+	}
 }
 
 // NewUsers generates new page from template with the form for signing up.
 func NewUsers(us *models.UserService) *Users {
 	return &Users{
 		NewView:     views.NewView("bootstrap", "views/users/new.gohtml"),
+		LoginView:   views.NewView("bootstrap", "views/users/login.gohtml"),
 		userService: us,
 	}
 }
