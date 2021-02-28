@@ -32,6 +32,7 @@ func main() {
 
 	r.HandleFunc("/", ctrls.Home).Methods(http.MethodGet)
 	r.HandleFunc("/contact", ctrls.Contact).Methods(http.MethodGet)
+	r.HandleFunc("/user", ctrls.User).Methods(http.MethodGet)
 
 	r.HandleFunc("/signup", controllers.NewUsers(us).NewUser).Methods(http.MethodGet)
 	r.HandleFunc("/signup", controllers.NewUsers(us).Create).Methods(http.MethodPost)

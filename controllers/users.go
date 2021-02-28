@@ -66,6 +66,12 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Something wrong", http.StatusInternalServerError)
 		panic(err)
 	}
+	cookie := http.Cookie{
+		Name:  "email",
+		Value: user.Email,
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/user", http.StatusFound)
 }
 
 // Login is used to verify email address and password of the user,
@@ -78,16 +84,25 @@ func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	user, err := u.userService.Authenticate(lf.Email, lf.Password)
-	switch err {
-	case models.ErrNotFound:
-		fmt.Fprintln(w, "Invalid email address")
-	case models.ErrInvalidPassword:
-		fmt.Fprintln(w, "Invalid password")
-	case nil:
-		fmt.Fprintln(w, user)
-	default:
-		http.Error(w, "Intermal server error - 500", http.StatusInternalServerError)
+	if err != nil {
+		switch err {
+		case models.ErrNotFound:
+			fmt.Fprintln(w, "Invalid email address")
+		case models.ErrInvalidPassword:
+			fmt.Fprintln(w, "Invalid password")
+		case nil:
+			fmt.Println(user)
+		default:
+			http.Error(w, "Intermal server error - 500", http.StatusInternalServerError)
+		}
+		return
 	}
+	cookie := http.Cookie{
+		Name:  "email",
+		Value: user.Email,
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/user", http.StatusFound)
 }
 
 // NewUsers generates new page from template with the form for signing up.

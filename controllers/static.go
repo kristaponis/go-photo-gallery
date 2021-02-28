@@ -10,6 +10,7 @@ import (
 type StaticPage struct {
 	HomeView    *views.View
 	ContactView *views.View
+	UserView    *views.View
 }
 
 // NewStaticPage creates static pages views.
@@ -17,6 +18,7 @@ func NewStaticPage() *StaticPage {
 	return &StaticPage{
 		HomeView:    views.NewView("bootstrap", "views/static/home.gohtml"),
 		ContactView: views.NewView("bootstrap", "views/static/contact.gohtml"),
+		UserView:    views.NewView("bootstrap", "views/static/user.gohtml"),
 	}
 }
 
@@ -27,9 +29,16 @@ func (sp *StaticPage) Home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Contact renders main Contact page.
+// Contact renders Contact page.
 func (sp *StaticPage) Contact(w http.ResponseWriter, r *http.Request) {
 	if err := sp.ContactView.Render(w, nil); err != nil {
+		panic(err)
+	}
+}
+
+// User renders Contact page after signup or login.
+func (sp *StaticPage) User(w http.ResponseWriter, r *http.Request) {
+	if err := sp.UserView.Render(w, nil); err != nil {
 		panic(err)
 	}
 }

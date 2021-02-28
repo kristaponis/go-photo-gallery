@@ -64,7 +64,7 @@ func (us *UserService) ByID(id uint) (*User, error) {
 // Any error but ErrNotFound should be 500 error.
 func (us *UserService) ByEmail(e string) (*User, error) {
 	var u User
-	err := us.db.First(&u).Where("email = ?", e).Error
+	err := us.db.Where("email = ?", e).First(&u).Error
 	switch err {
 	case nil:
 		return &u, nil
@@ -84,7 +84,7 @@ func (us *UserService) Create(u *User) error {
 	}
 	u.PasswordHash = string(hashpass)
 	u.Password = ""
-	us.db.AutoMigrate(&u)
+	// us.db.AutoMigrate(&u)
 	return us.db.Create(&u).Error
 }
 
