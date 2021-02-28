@@ -3,6 +3,5 @@
 .DS_Store
 
 stuff/
-notes.md
 
 config/config.go
