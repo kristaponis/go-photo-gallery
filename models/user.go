@@ -5,6 +5,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/kristaponis/go-photo-gallery/helpers"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,12 +30,15 @@ type User struct {
 	Email        string `gorm:"not null;unique_index"`
 	Password     string `gorm:"-"`
 	PasswordHash string `gorm:"not null"`
+	Remember     string `gorm:"-"`
+	RememberHash string `gorm:"not null;unique_index"`
 }
 
 // UserService hods gorm.DB object and performs database operations
 // with its methods like ByID, Create and others.
 type UserService struct {
-	db *gorm.DB
+	db   *gorm.DB
+	hmac helpers.HMAC
 }
 
 // ByID will look for a user with the provided ID. If the user
@@ -75,6 +79,27 @@ func (us *UserService) ByEmail(e string) (*User, error) {
 	}
 }
 
+// ByRemember will look for a user with the provided token and
+// handle the hashing of the token. If the user is found,
+// then it will return the user and nil for the error.
+// If the user is not found, it will return ErrNotFound error
+// and nil for the user. If there is another error, it will return
+// error with more info.
+// Any error but ErrNotFound should be 500 error.
+func (us *UserService) ByRemember(token string) (*User, error) {
+	var u User
+	rememberHash := us.hmac.HashString(token)
+	err := us.db.Where("remember_hash = ?", rememberHash).First(&u).Error
+	switch err {
+	case gorm.ErrRecordNotFound:
+		return nil, ErrNotFound
+	case nil:
+		return &u, nil
+	default:
+		return nil, err
+	}
+}
+
 // Create will create the provided user, auto fill data and
 // insert this info into database.
 func (us *UserService) Create(u *User) error {
@@ -84,6 +109,14 @@ func (us *UserService) Create(u *User) error {
 	}
 	u.PasswordHash = string(hashpass)
 	u.Password = ""
+	if u.Remember == "" {
+		token, err := helpers.RememberToken()
+		if err != nil {
+			return err
+		}
+		u.Remember = token
+	}
+	u.RememberHash = us.hmac.HashString(u.Remember)
 	// us.db.AutoMigrate(&u)
 	return us.db.Create(&u).Error
 }
@@ -91,6 +124,9 @@ func (us *UserService) Create(u *User) error {
 // Update will update yhe provided user. It will rewrite the user
 // with the new data.
 func (us *UserService) Update(u *User) error {
+	if u.Remember != "" {
+		u.RememberHash = us.hmac.HashString(u.Remember)
+	}
 	return us.db.Save(u).Error
 }
 
@@ -134,7 +170,9 @@ func UserServiceConn(conn string) (*UserService, error) {
 		return nil, err
 	}
 	db.LogMode(true)
+	hmac := helpers.NewHMAC("temp-secret-key")
 	return &UserService{
-		db: db,
+		db:   db,
+		hmac: hmac,
 	}, nil
 }

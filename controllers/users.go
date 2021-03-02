@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/kristaponis/go-photo-gallery/helpers"
 	"github.com/kristaponis/go-photo-gallery/models"
 
 	"github.com/gorilla/schema"
@@ -66,11 +67,11 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Something wrong", http.StatusInternalServerError)
 		panic(err)
 	}
-	cookie := http.Cookie{
-		Name:  "email",
-		Value: user.Email,
+	if err := u.setUserCookie(w, &user); err != nil {
+		http.Error(w, "Intermal server error - 500", http.StatusInternalServerError)
+		fmt.Println(err)
+		return
 	}
-	http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/user", http.StatusFound)
 }
 
@@ -97,12 +98,35 @@ func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	if err := u.setUserCookie(w, user); err != nil {
+		http.Error(w, "Intermal server error - 500", http.StatusInternalServerError)
+		fmt.Println(err)
+		return
+	}
+	http.Redirect(w, r, "/user", http.StatusFound)
+}
+
+// setUserCookie creates and sets user cookie to sign in the user.
+// It generates diferent remember tokens each time user logs in.
+func (u *Users) setUserCookie(w http.ResponseWriter, user *models.User) error {
+	if user.Remember == "" {
+		token, err := helpers.RememberToken()
+		if err != nil {
+			return err
+		}
+		user.Remember = token
+	}
+	err := u.userService.Update(user)
+	if err != nil {
+		return err
+	}
+
 	cookie := http.Cookie{
-		Name:  "email",
-		Value: user.Email,
+		Name:  "remembertoken",
+		Value: user.Remember,
 	}
 	http.SetCookie(w, &cookie)
-	http.Redirect(w, r, "/user", http.StatusFound)
+	return nil
 }
 
 // NewUsers generates new page from template with the form for signing up.
