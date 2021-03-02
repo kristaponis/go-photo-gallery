@@ -120,10 +120,10 @@ func (u *Users) setUserCookie(w http.ResponseWriter, user *models.User) error {
 	if err != nil {
 		return err
 	}
-
 	cookie := http.Cookie{
 		Name:  "remembertoken",
 		Value: user.Remember,
+		HttpOnly: true,
 	}
 	http.SetCookie(w, &cookie)
 	return nil
