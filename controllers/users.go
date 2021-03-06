@@ -31,10 +31,10 @@ type Users struct {
 	userService *models.UserService
 }
 
-// NewUser renders the form used to create a new user account.
+// NewSignup renders the form used to create a new user account.
 //
 // GET /signup
-func (u *Users) NewUser(w http.ResponseWriter, r *http.Request) {
+func (u *Users) NewSignup(w http.ResponseWriter, r *http.Request) {
 	if err := u.NewView.Render(w, nil); err != nil {
 		panic(err)
 	}
@@ -107,7 +107,7 @@ func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // setUserCookie creates and sets user cookie to sign in the user.
-// It generates diferent remember tokens each time user logs in.
+// It generates different remember tokens each time user logs in.
 func (u *Users) setUserCookie(w http.ResponseWriter, user *models.User) error {
 	if user.Remember == "" {
 		token, err := helpers.RememberToken()
@@ -129,7 +129,8 @@ func (u *Users) setUserCookie(w http.ResponseWriter, user *models.User) error {
 	return nil
 }
 
-// NewUsers generates new page from template with the form for signing up.
+// NewUsers generates new page from template with the form
+// for logging in or signing up.
 func NewUsers(us *models.UserService) *Users {
 	return &Users{
 		NewView:     views.NewView("bootstrap", "views/users/new.gohtml"),

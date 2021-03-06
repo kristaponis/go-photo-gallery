@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/postgres" //gorm postgres driver
 	"github.com/kristaponis/go-photo-gallery/helpers"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -17,7 +17,7 @@ var (
 	ErrInvalidID = errors.New("models: ID is invalid, must be > 0")
 
 	// ErrInvalidPassword is used when passed email address is invalid.
-	ErrInvalidPassword = errors.New("models: email adress is invalid")
+	ErrInvalidPassword = errors.New("models: email address is invalid")
 
 	// passPepper ads additional fixed string to user password (pepper).
 	passwordPepper = "chili-pepper"
